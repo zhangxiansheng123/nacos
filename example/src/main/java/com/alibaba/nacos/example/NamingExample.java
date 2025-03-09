@@ -51,9 +51,10 @@ public class NamingExample {
         Properties properties = new Properties();
         properties.setProperty("serverAddr", System.getProperty("serverAddr", "localhost"));
         properties.setProperty("namespace", System.getProperty("namespace", "public"));
-        
+
+        // 根据NamingFactory创建一个Service服务类
         NamingService naming = NamingFactory.createNamingService(properties);
-        
+        // 通过服务类去注向注册中心注册自己的服务
         naming.registerInstance(INSTANCE_SERVICE_NAME, INSTANCE_IP, INSTANCE_PORT, INSTANCE_CLUSTER_NAME);
     
         Executor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),

@@ -109,6 +109,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
         this.rpcClient = RpcClientFactory.createClient(uuid, ConnectionType.GRPC, grpcClientConfig);
         this.redoService = new NamingGrpcRedoService(this, properties);
         NAMING_LOGGER.info("Create naming rpc client for uuid->{}", uuid);
+        // 会去创建rpc连接
         start(serverListFactory, serviceInfoHolder);
     }
     
@@ -143,7 +144,9 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
     
     private void registerServiceForEphemeral(String serviceName, String groupName, Instance instance)
             throws NacosException {
+        // 这里做了一下缓存
         redoService.cacheInstanceForRedo(serviceName, groupName, instance);
+        // 继续注册
         doRegisterService(serviceName, groupName, instance);
     }
     
@@ -247,8 +250,10 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
      * @throws NacosException nacos exception
      */
     public void doRegisterService(String serviceName, String groupName, Instance instance) throws NacosException {
+        // 构造一个请求对象
         InstanceRequest request = new InstanceRequest(namespaceId, serviceName, groupName,
                 NamingRemoteConstants.REGISTER_INSTANCE, instance);
+        // 请求到服务端注册
         requestToServer(request, Response.class);
         redoService.instanceRegistered(serviceName, groupName);
     }
@@ -442,6 +447,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
     
     private <T extends Response> T requestToServer(AbstractNamingRequest request, Class<T> responseClass)
             throws NacosException {
+        // rpcClient去进行Rpc请求，没有抛出异常说明调用成功
         Response response = null;
         try {
             request.putAllHeader(
