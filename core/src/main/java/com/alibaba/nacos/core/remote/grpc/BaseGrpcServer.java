@@ -87,7 +87,9 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
     @Override
     public void startServer() throws Exception {
         final MutableHandlerRegistry handlerRegistry = new MutableHandlerRegistry();
+        // 注册服务
         addServices(handlerRegistry, getSeverInterceptors().toArray(new ServerInterceptor[0]));
+        // netty创建grpc的server端
         NettyServerBuilder builder = NettyServerBuilder.forPort(getServicePort()).executor(getRpcExecutor());
         
         Optional<InternalProtocolNegotiator.ProtocolNegotiator> negotiator = newProtocolNegotiator();
@@ -106,7 +108,7 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
                 .keepAliveTime(getKeepAliveTime(), TimeUnit.MILLISECONDS)
                 .keepAliveTimeout(getKeepAliveTimeout(), TimeUnit.MILLISECONDS)
                 .permitKeepAliveTime(getPermitKeepAliveTime(), TimeUnit.MILLISECONDS).build();
-        
+        // 启动grpc server
         server.start();
     }
     
@@ -207,7 +209,8 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
                                 GrpcServerConstants.REQUEST_METHOD_NAME))
                 .setRequestMarshaller(ProtoUtils.marshaller(Payload.getDefaultInstance()))
                 .setResponseMarshaller(ProtoUtils.marshaller(Payload.getDefaultInstance())).build();
-        
+
+        // 处理类
         final ServerCallHandler<Payload, Payload> payloadHandler = ServerCalls.asyncUnaryCall(
                 (request, responseObserver) -> {
                     handleCommonRequest(request, responseObserver);
@@ -218,6 +221,7 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
         handlerRegistry.addService(ServerInterceptors.intercept(serviceDefOfUnaryPayload, serverInterceptor));
         
         // bi stream register.
+        // 双向流处理类
         final ServerCallHandler<Payload, Payload> biStreamHandler = ServerCalls.asyncBidiStreamingCall(
                 (responseObserver) -> grpcBiStreamRequestAcceptor.requestBiStream(responseObserver));
         
