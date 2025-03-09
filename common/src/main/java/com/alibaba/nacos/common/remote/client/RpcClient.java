@@ -345,8 +345,7 @@ public abstract class RpcClient implements Closeable {
                 
                 LoggerUtils.printIfInfoEnabled(LOGGER, "[{}] Try to connect to server on start up, server: {}",
                         rpcClientConfig.name(), serverInfo);
-
-                // 获取连接
+                
                 connectToServer = connectToServer(serverInfo);
             } catch (Throwable e) {
                 LoggerUtils.printIfWarnEnabled(LOGGER,
@@ -355,14 +354,12 @@ public abstract class RpcClient implements Closeable {
             }
             
         }
-
-        //如果连接不为空
+        
         if (connectToServer != null) {
             LoggerUtils
                     .printIfInfoEnabled(LOGGER, "[{}] Success to connect to server [{}] on start up, connectionId = {}",
                             rpcClientConfig.name(), connectToServer.serverInfo.getAddress(),
                             connectToServer.getConnectionId());
-            // 对currentConnection赋值
             this.currentConnection = connectToServer;
             rpcClientStatus.set(RpcClientStatus.RUNNING);
             eventLinkedBlockingQueue.offer(new ConnectionEvent(ConnectionEvent.CONNECTED, currentConnection));
@@ -624,7 +621,6 @@ public abstract class RpcClient implements Closeable {
      * @return response from server.
      */
     public Response request(Request request) throws NacosException {
-        // 获取超时时间，如果没有配置，默认3s超时
         return request(request, rpcClientConfig.timeOutMills());
     }
     
@@ -648,7 +644,6 @@ public abstract class RpcClient implements Closeable {
                     throw new NacosException(NacosException.CLIENT_DISCONNECT,
                             "Client not connected, current status:" + rpcClientStatus.get());
                 }
-                // 拿到连接去请求
                 response = this.currentConnection.request(request, timeoutMills);
                 if (response == null) {
                     throw new NacosException(SERVER_ERROR, "Unknown Exception.");

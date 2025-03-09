@@ -349,11 +349,9 @@ public abstract class GrpcClient extends RpcClient {
         String connectionId = "";
         try {
             if (grpcExecutor == null) {
-                // 创建线程池,为什么手动创建了这么多线程池,一个项目中最多创建多少个，记得极客时间说的一般不超过十二个
                 this.grpcExecutor = createGrpcExecutor(serverInfo.getServerIp());
             }
             int port = serverInfo.getServerPort() + rpcPortOffset();
-            // 根据ip和端口创建Grpc的ManagedChannel
             ManagedChannel managedChannel = createNewManagedChannel(serverInfo.getServerIp(), port);
             RequestGrpc.RequestFutureStub newChannelStubTemp = createNewChannelStub(managedChannel);
             
@@ -369,7 +367,6 @@ public abstract class GrpcClient extends RpcClient {
             
             BiRequestStreamGrpc.BiRequestStreamStub biRequestStreamStub = BiRequestStreamGrpc.newStub(
                     newChannelStubTemp.getChannel());
-            // 包装了一个连接池，用于异步请求的回调处理
             GrpcConnection grpcConn = new GrpcConnection(serverInfo, grpcExecutor);
             grpcConn.setConnectionId(connectionId);
             // if not supported, it will be false
@@ -410,7 +407,6 @@ public abstract class GrpcClient extends RpcClient {
                 // wait to register connection setup
                 Thread.sleep(100L);
             }
-            // 返回连接，包装了chanel, client request
             return grpcConn;
         } catch (Exception e) {
             LOGGER.error("[{}]Fail to connect to server!,error={}", GrpcClient.this.getName(), e);

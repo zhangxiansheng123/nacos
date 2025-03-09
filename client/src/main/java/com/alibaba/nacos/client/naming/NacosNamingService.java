@@ -146,7 +146,6 @@ public class NacosNamingService implements NamingService {
         instance.setPort(port);
         instance.setWeight(1.0);
         instance.setClusterName(clusterName);
-        // 创建了一个Instance对象，这个Instance，查看它的包名，是com.alibaba.nacos.api.naming.pojo，也就是需要传递属性的一个实体类
         registerInstance(serviceName, groupName, instance);
     }
     
@@ -157,9 +156,7 @@ public class NacosNamingService implements NamingService {
     
     @Override
     public void registerInstance(String serviceName, String groupName, Instance instance) throws NacosException {
-        // 参数合法校验
         NamingUtils.checkInstanceIsLegal(instance);
-        // 校验服务名与group名称合法行
         checkAndStripGroupNamePrefix(instance, groupName);
         clientProxy.registerService(serviceName, groupName, instance);
     }

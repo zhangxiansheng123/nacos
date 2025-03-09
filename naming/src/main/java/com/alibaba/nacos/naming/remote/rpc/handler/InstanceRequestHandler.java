@@ -61,10 +61,8 @@ public class InstanceRequestHandler extends RequestHandler<InstanceRequest, Inst
         InstanceUtil.setInstanceIdIfEmpty(request.getInstance(), service.getGroupedServiceName());
         switch (request.getType()) {
             case NamingRemoteConstants.REGISTER_INSTANCE:
-                // 处理注册
                 return registerInstance(service, request, meta);
             case NamingRemoteConstants.DE_REGISTER_INSTANCE:
-                // 处理下线
                 return deregisterInstance(service, request, meta);
             default:
                 throw new NacosException(NacosException.INVALID_PARAM,

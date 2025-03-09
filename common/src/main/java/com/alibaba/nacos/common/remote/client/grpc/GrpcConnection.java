@@ -69,13 +69,10 @@ public class GrpcConnection extends Connection {
     
     @Override
     public Response request(Request request, long timeouts) throws NacosException {
-        // 转换请求对象
         Payload grpcRequest = GrpcUtils.convert(request);
-        // grpc请求
         ListenableFuture<Payload> requestFuture = grpcFutureServiceStub.request(grpcRequest);
         Payload grpcResponse;
         try {
-            // 获取返回结果
             if (timeouts <= 0) {
                 grpcResponse = requestFuture.get();
             } else {

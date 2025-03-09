@@ -93,7 +93,6 @@ public class NamingClientProxyDelegate implements NamingClientProxy {
     
     @Override
     public void registerService(String serviceName, String groupName, Instance instance) throws NacosException {
-        // 获取代理类去注册
         getExecuteClientProxy(instance).registerService(serviceName, groupName, instance);
     }
     
@@ -194,7 +193,6 @@ public class NamingClientProxyDelegate implements NamingClientProxy {
     }
     
     private NamingClientProxy getExecuteClientProxy(Instance instance) {
-        // 默认是ephemeral,为true,也就是返回grpcClientProxy,2.0改动中将http的请求换成了gRpc了
         if (instance.isEphemeral() || grpcClientProxy.isAbilitySupportedByServer(AbilityKey.SERVER_SUPPORT_PERSISTENT_INSTANCE_BY_GRPC)) {
             return grpcClientProxy;
         }
